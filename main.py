@@ -166,4 +166,4 @@ main()
 	else:
 		os.remove("new8.html")
 		rename()
-'''
+''' 
