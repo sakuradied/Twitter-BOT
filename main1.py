@@ -40,7 +40,7 @@ def startweb(): #启动网页并调用截屏函数然后杀死Google浏览器进
 	webbrowser.open(str(web()))
 	time.sleep(3)
 	i=7
-	time.sleep(20)
+	time.sleep(15)
 	while i>0:
 		win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL,0,0,-100)
 		i=i-1
@@ -48,7 +48,6 @@ def startweb(): #启动网页并调用截屏函数然后杀死Google浏览器进
 	startqq()
 	time.sleep(2)
 	os.system(r'taskkill /F /IM chrome.exe')
-	
 	qq()
 def web():#读取文本内容来分辨是那个P主
 	ini = open("http.txt")
@@ -71,47 +70,38 @@ def html_file():#获取网页内容  并保存到鸽子的文件中
 	H_file.write(str(html))
 	H_file.close()
 
-	
-def file_size():
-	id_file = open("id.txt")
-	i = id_file.read()
-	id_file.close()
-	i = i[0]
-	i=int(i)
-	w=[0]*10
-	a=[0]*10
-	name=file_name()
-	name=str(name)
-	file_size = stat(name)#读取文件大小 新文件 (
-	file_size=file_size.st_size
-	print("当前文件大小",file_size,"0")
-	file_size=int(file_size)
-	w[i] = file_size
-	time.sleep(20)
-	html_file()
-	file_size = stat(name)
-	file_size=file_size.st_size #读取文件大小 新文件 X2(
-	file_size=int(file_size)
-	print("当前文件大小",file_size,"1")
-	a[i] = file_size
-	pd = a[i]-w[i]
-	
-	if pd>700:
-		print("鸽子",file_name(),"发推了")
-		startweb()
-	else:
-		print(file_name(),"这只鸽子没有发推检测下一只鸽子")
-def config():
-	p=["https://twitter.com/8_Prince","https://twitter.com/cosmobsp","https://twitter.com/cosmobsp","https://twitter.com/Hiroaki_Arai_","https://twitter.com/NayutalieN"]			#这个数组中存放鸽子推特地址
+def main():
+	p= ["https://twitter.com/8_Prince","https://twitter.com/cosmobsp","https://twitter.com/Hiroaki_Arai_","https://twitter.com/NayutalieN","https://twitter.com/tomatowt","https://twitter.com/omu929","https://twitter.com/_Gom_","https://twitter.com/mikito_p_","https://twitter.com/scopscop","https://twitter.com/pinocchiop","https://twitter.com/neru_sleep","https://twitter.com/DECO27","https://twitter.com/40mP","https://twitter.com/uni_mafumafu","https://twitter.com/_MitchieM","https://twitter.com/doriko_","https://twitter.com/nashimotowe","https://twitter.com/tkomine","https://twitter.com/kz_lt","https://twitter.com/Omoi3965","https://twitter.com/Knoshin_nchaP","https://twitter.com/CCrusherP","https://twitter.com/hinataEW","https://twitter.com/vinegar_vinegar","https://twitter.com/iii0303_8","https://twitter.com/amehuruyoru49","https://twitter.com/amenomurakumo_p","https://twitter.com/yurryCanon","https://twitter.com/kemu8888","https://twitter.com/bass_ynk","https://twitter.com/696rkr","https://twitter.com/maretu01","https://twitter.com/samorira9","https://twitter.com/mothy_akuno","https://twitter.com/rerulili","https://twitter.com/tikandame","https://twitter.com/inabakumori","https://twitter.com/yasuhiro_vanq","https://twitter.com/Yuki_Jouet","https://twitter.com/balloon0120","https://twitter.com/WADATAKEAKI","https://twitter.com/harumaki_gohan","https://twitter.com/koyokoyokoyori","https://twitter.com/o0toa0o","https://twitter.com/wowaka","https://twitter.com/nabuna2","https://twitter.com/tghgworks_krsy","https://twitter.com/164203","https://twitter.com/sasakure__UK","https://twitter.com/siinamota","https://twitter.com/NishizawasanP","https://twitter.com/jin_jin_suruyo","https://twitter.com/buzz_g","https://twitter.com/GigaMozuku","https://twitter.com/MikanseiP","https://twitter.com/halyosy","https://twitter.com/asshole_wii","https://twitter.com/kairiki_bear","https://twitter.com/oO0Eve0Oo"]		#这个数组中存放鸽子推特地址
 	i=0
-	while i<=4:
-		with open('http.txt','w') as w:				#目前鸽子地址单独存放到http.txt文件
-			w.write(p[i])
-		with open('id.txt','w') as id:				#以像文本存放数字的形式来判断数组位置
-			id.write(str(i))
-		i=i+1
-		html_file()
-		file_size()
-while True:
-	
-	config()
+	n = [0]*99
+	a = [0]*99
+	while True:
+		while i<= 58:
+			with open('http.txt','w') as w:				#目前鸽子地址单独存放到http.txt文件
+				w.write(p[i])
+			w = os.path.isfile(str(file_name()))
+			name=file_name()
+			name=str(name)
+			if w == True:
+				html_file()
+				file_size = stat(name)#读取文件大小 新文件 (
+				file_size=file_size.st_size
+				n[i] = file_size
+				main = int(n[i]) - int(a[i])
+				print("数据大小对比为:",main,"#这是第",i,"次循环")
+				if main<700:
+					print(name,"这只鸽子没有发推检测下一只鸽子")
+				else:
+					a[i]=n[i]
+					print("a=",a[i])
+					print("鸽子",name,"发推了")
+					startweb()
+			else:
+				html_file()
+				file_size = stat(name)#读取文件大小 新文件 (
+				file_size=file_size.st_size
+				a[i] = file_size
+				print("搜集的数据中")
+			i=i+1
+		i=0
+main()
