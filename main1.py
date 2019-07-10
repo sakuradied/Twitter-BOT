@@ -39,7 +39,7 @@ def qq():#将剪切板内容发送到QQ
 def startweb(): #启动网页并调用截屏函数然后杀死Google浏览器进程
 	webbrowser.open(str(web()))
 	time.sleep(3)
-	i=7
+	i=6
 	time.sleep(15)
 	while i>0:
 		win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL,0,0,-100)
@@ -64,11 +64,13 @@ def file_name(): #读取鸽子名
 
 def html_file():#获取网页内容  并保存到鸽子的文件中
 	print("开始连接到",web())
-	response = urllib.request.urlopen(str(web()),timeout=24)
-	html = response.read()
-	H_file = open(str(file_name()),"w")
-	H_file.write(str(html))
-	H_file.close()
+	try:
+		html = urllib.request.urlopen(str(web()),timeout=24).read()
+		H_file = open(str(file_name()),"w")
+		H_file.write(str(html))
+		H_file.close()
+	except Exception as e:
+		print("ERROR:"+str(e))
 
 def main():
 	p= ["https://twitter.com/8_Prince","https://twitter.com/cosmobsp","https://twitter.com/Hiroaki_Arai_","https://twitter.com/NayutalieN","https://twitter.com/tomatowt","https://twitter.com/omu929","https://twitter.com/_Gom_","https://twitter.com/mikito_p_","https://twitter.com/scopscop","https://twitter.com/pinocchiop","https://twitter.com/neru_sleep","https://twitter.com/DECO27","https://twitter.com/40mP","https://twitter.com/uni_mafumafu","https://twitter.com/_MitchieM","https://twitter.com/doriko_","https://twitter.com/nashimotowe","https://twitter.com/tkomine","https://twitter.com/kz_lt","https://twitter.com/Omoi3965","https://twitter.com/Knoshin_nchaP","https://twitter.com/CCrusherP","https://twitter.com/hinataEW","https://twitter.com/vinegar_vinegar","https://twitter.com/iii0303_8","https://twitter.com/amehuruyoru49","https://twitter.com/amenomurakumo_p","https://twitter.com/yurryCanon","https://twitter.com/kemu8888","https://twitter.com/bass_ynk","https://twitter.com/696rkr","https://twitter.com/maretu01","https://twitter.com/samorira9","https://twitter.com/mothy_akuno","https://twitter.com/rerulili","https://twitter.com/tikandame","https://twitter.com/inabakumori","https://twitter.com/yasuhiro_vanq","https://twitter.com/Yuki_Jouet","https://twitter.com/balloon0120","https://twitter.com/WADATAKEAKI","https://twitter.com/harumaki_gohan","https://twitter.com/koyokoyokoyori","https://twitter.com/o0toa0o","https://twitter.com/wowaka","https://twitter.com/nabuna2","https://twitter.com/tghgworks_krsy","https://twitter.com/164203","https://twitter.com/sasakure__UK","https://twitter.com/siinamota","https://twitter.com/NishizawasanP","https://twitter.com/jin_jin_suruyo","https://twitter.com/buzz_g","https://twitter.com/GigaMozuku","https://twitter.com/MikanseiP","https://twitter.com/halyosy","https://twitter.com/asshole_wii","https://twitter.com/kairiki_bear","https://twitter.com/oO0Eve0Oo"]		#这个数组中存放鸽子推特地址
@@ -76,7 +78,7 @@ def main():
 	n = [0]*99
 	a = [0]*99
 	while True:
-		while i<= 58:
+		while i<= 2:
 			with open('http.txt','w') as w:				#目前鸽子地址单独存放到http.txt文件
 				w.write(p[i])
 			w = os.path.isfile(str(file_name()))
