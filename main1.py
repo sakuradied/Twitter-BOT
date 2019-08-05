@@ -10,7 +10,7 @@ from ctypes import *
 import win32clipboard
 import	re
 
-def F12():
+def F12(): #网页全屏化 本为F11
 	win32api.keybd_event(122, 0, 0, 0)
 	win32api.keybd_event(122, 0, win32con.KEYEVENTF_KEYUP, 0)
 
@@ -29,7 +29,7 @@ def startqq():#截屏并发送到剪切板
 		win32clipboard.SetClipboardData(win32con.CF_BITMAP, aString)
 		win32clipboard.CloseClipboard()
 	else:
-		print("图片编码格式解析失败")
+		print("图片编码格式解析失败")#异常处理
 def qq():#将剪切板内容发送到QQ
 	name = "DD术学家的#爱爱爱爱(指术力口)"  #要发送到的群名
 	win32clipboard.OpenClipboard()
