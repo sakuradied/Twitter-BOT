@@ -99,7 +99,7 @@ def date_Twitter(ii): #检测到更新并获取更新的文字内容
 		response = request.urlopen(date_Twitter)
 		print(e.reason)
 	twitter_html = response.read().decode('utf-8')
-	date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)<a href=', str(twitter_html))
+	date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)', str(twitter_html))
 	return(date_wb[1])
 	
 def main():
