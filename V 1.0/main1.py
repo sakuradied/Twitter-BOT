@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from urllib import request,error
+from urllib import request,error,parse
 import os,time
 from os import stat
 import win32api
@@ -10,7 +10,37 @@ import webbrowser
 from ctypes import *
 import win32clipboard
 import	re
+import random
+import http.client
+import hashlib
 
+def fanyi(text):	#调用百度的API 
+	appid = ''	#APP ID
+	secretKey = ''	#秘钥
+	httpClient = None
+	myurl = '/api/trans/vip/translate'
+	q = text
+	fromLang = 'auto'
+	toLang = 'zh'
+	salt = random.randint(32768, 65536)
+	sign = appid+q+str(salt)+secretKey
+	m1 = hashlib.md5()
+	m1.update(sign.encode(encoding='utf-8'))
+	sign = m1.hexdigest()
+	myurl = myurl+'?appid='+appid+'&q='+parse.quote(q)+'&from='+fromLang+'&to='+toLang+'&salt='+str(salt)+'&sign='+sign 
+	try:
+		httpClient = http.client.HTTPConnection('api.fanyi.baidu.com')
+		httpClient.request('GET', myurl)
+		response = httpClient.getresponse()
+		w = response.read().decode('utf-8')
+		w = eval(w)
+		for line in w['trans_result']:
+			return(line['dst'])
+	except Exception as e:
+		print(e)
+	finally:
+		if httpClient:
+			httpClient.close()
 
 def getText():
     """获取剪贴板文本"""
@@ -74,11 +104,12 @@ def date_id(ii):
 	req = request.Request(url, headers=head)
 	#传入创建好的Request对象
 	print("-----加载中-----")
-	try:
-		response = request.urlopen(req)	
-	except error.URLError as e:
-		response = request.urlopen(req)	
-		print(e.reason)
+	while True:
+		try:
+			response = request.urlopen(req,timeout=3)	
+			break
+		except error.URLError as e:
+			print(e.reason)
 	html = response.read().decode('utf-8')
 	#print(html)
 	date_id = re.search(r'name="tweet_(\d*)', str(html))
@@ -93,13 +124,16 @@ def date_Twitter(ii): #检测到更新并获取更新的文字内容
 	#print("最新推特地址为:",date_url)
 	date_Twitter = request.Request(date_url, headers=head)
 	print("等待获取网页文字中")
-	try:
-		response = request.urlopen(date_Twitter)
-	except error.URLError as e:
-		response = request.urlopen(date_Twitter)
-		print(e.reason)
+	while True:
+		try:
+			response = request.urlopen(date_Twitter,timeout=3)
+			break
+		except error.URLError as e:
+			print(e.reason)
 	twitter_html = response.read().decode('utf-8')
-	date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)', str(twitter_html))
+	date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)<a href=', str(twitter_html))
+	if	date_wb == None:
+		date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)', str(twitter_html))
 	return(date_wb[1])
 	
 def main():
@@ -126,7 +160,8 @@ def main():
 					print(file_name(i),":未更新")
 				else:
 					jiuID[i]=newID[i]
-					date_q=file_name(i)+"发推啦:"+date_Twitter(i)
+					wb=date_Twitter(i)
+					date_q=file_name(i)+"发推啦:\n原文为:\n"+wb+"\n机翻后文字为:\n "+fanyi(wb)
 					print(date_q)
 					qqbot(get_QQ_group_name(),date_q)
 			i=i+1
