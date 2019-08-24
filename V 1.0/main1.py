@@ -14,7 +14,7 @@ import random
 import http.client
 import hashlib
 
-def fanyi(text):	#调用百度的API 
+def fanyi(text):	#调用百度的翻译的API
 	appid = ''	#APP ID
 	secretKey = ''	#秘钥
 	httpClient = None
