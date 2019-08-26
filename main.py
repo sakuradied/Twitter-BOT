@@ -8,7 +8,7 @@ from PIL import ImageGrab
 import webbrowser
 from ctypes import *
 import win32clipboard
-
+#历史文件
 def zj():
 	win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN|win32con.MOUSEEVENTF_LEFTUP, 0, 0)
 def fj():
