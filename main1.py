@@ -1,4 +1,5 @@
-import urllib.request
+# -*- coding: utf-8 -*-
+from urllib import request,error,parse
 import os,time
 from os import stat
 import win32api
@@ -9,103 +10,196 @@ import webbrowser
 from ctypes import *
 import win32clipboard
 import	re
+import random
+import http.client
+import hashlib
 
-def F12(): #网页全屏化 本为F11
-	win32api.keybd_event(122, 0, 0, 0)
-	win32api.keybd_event(122, 0, win32con.KEYEVENTF_KEYUP, 0)
-
-def startqq():#截屏并发送到剪切板
-	#截屏bmp图片文件
-	time.sleep(3)
+def Twitter_img():
 	im = ImageGrab.grab()
-	time.sleep(3)
-	im.save('img/fs.bmp')
-	time.sleep(3)
-	#将bmp图片文件保存到剪切板
-	aString=windll.user32.LoadImageW(0,"img/fs.bmp",win32con.IMAGE_BITMAP,0,0,win32con.LR_LOADFROMFILE)
+	im.save('save.bmp')
+
+def Twitter_img_save():
+	aString=windll.user32.LoadImageW(0,"save.bmp",win32con.IMAGE_BITMAP,0,0,win32con.LR_LOADFROMFILE)	#解析图片到剪切板
 	if aString !=0: 
 		win32clipboard.OpenClipboard()
 		win32clipboard.EmptyClipboard()
 		win32clipboard.SetClipboardData(win32con.CF_BITMAP, aString)
 		win32clipboard.CloseClipboard()
 	else:
-		print("图片编码格式解析失败")#异常处理
-def qq():#将剪切板内容发送到QQ
-	name = "DD术学家的#爱爱爱爱(指术力口)"  #要发送到的群名
-	win32clipboard.OpenClipboard()
-	win32clipboard.CloseClipboard()
-	handle = win32gui.FindWindow(None, name)
-	if True:
-		win32gui.SendMessage(handle, 770, 0, 0)
-		win32gui.SendMessage(handle, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
-def startweb(): #启动网页并调用截屏函数然后杀死Google浏览器进程
-	webbrowser.open(str(web()))
-	time.sleep(3)
-	i=6
-	F12() #模拟按键
-	time.sleep(15)
-	while i>0:
-		win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL,0,0,-100)
-		i=i-1
-	print("开始截屏")
-	startqq()
-	time.sleep(2)
+		print("图片编码格式解析失败")
+	# 将消息写到剪贴板
+def F11():
+	win32api.keybd_event(122, 0, 0, 0)
+	win32api.keybd_event(122, 0, win32con.KEYEVENTF_KEYUP, 0)
+	
+def web_start(Turl):
+	webbrowser.open(str(Turl))
+	time.sleep(20)
+	F11()
+	time.sleep(1)
+	Twitter_img()
 	os.system(r'taskkill /F /IM chrome.exe')
-	qq()
-def web():#读取文本内容来分辨是那个P主
-	ini = open("http.txt")
-	w=ini.readlines()
-	return w[0]
-def file_name(): #读取鸽子名
-	name = open("http.txt")
-	w=name.read()
-	name.close()
-	w=re.findall(r"com/(.+)",w)
-	w=w[0]
-	return w
-def html_file():#获取网页内容  并保存到鸽子的文件中
-	time.sleep(30)
-	print("开始连接到",web())
+
+def Send_img(QQ_group_name):
+	# 获取qq窗口句柄
+	qq1 = win32gui.FindWindow(None, QQ_group_name)
+	# 投递剪贴板消息到QQ窗体
+	win32gui.SendMessage(qq1, 258, 22, 2080193)
+	win32gui.SendMessage(qq1, 770, 0, 0)
+    # 模拟按下回车键
+	win32gui.SendMessage(qq1, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
+	win32gui.SendMessage(qq1, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
+	print("尝试发送")
+
+
+def fanyi(text):	#调用百度的API 
+	appid = '20190824000329276'	#APP ID
+	secretKey = 'AzHQHfKcphYrueq8XiO3'	#秘钥
+	httpClient = None
+	myurl = '/api/trans/vip/translate'
+	q = text
+	fromLang = 'auto'
+	toLang = 'zh'
+	salt = random.randint(32768, 65536)
+	sign = appid+q+str(salt)+secretKey
+	m1 = hashlib.md5()
+	m1.update(sign.encode(encoding='utf-8'))
+	sign = m1.hexdigest()
+	myurl = myurl+'?appid='+appid+'&q='+parse.quote(q)+'&from='+fromLang+'&to='+toLang+'&salt='+str(salt)+'&sign='+sign 
 	try:
-		html = urllib.request.urlopen(str(web()),timeout=24).read()
-		H_file = open(str(file_name()),"w")
-		H_file.write(str(html))
-		H_file.close()
+		httpClient = http.client.HTTPConnection('api.fanyi.baidu.com')
+		httpClient.request('GET', myurl)
+		response = httpClient.getresponse()
+		w = response.read().decode('utf-8')
+		w = eval(w)
+		for line in w['trans_result']:
+			return(line['dst'])
 	except Exception as e:
-		print("ERROR:"+str(e))
-		html_file()
-def main():
-	p= ["https://twitter.com/8_Prince","https://twitter.com/cosmobsp","https://twitter.com/Hiroaki_Arai_","https://twitter.com/NayutalieN","https://twitter.com/tomatowt","https://twitter.com/omu929","https://twitter.com/_Gom_","https://twitter.com/mikito_p_","https://twitter.com/scopscop","https://twitter.com/pinocchiop","https://twitter.com/neru_sleep","https://twitter.com/DECO27","https://twitter.com/40mP","https://twitter.com/uni_mafumafu","https://twitter.com/_MitchieM","https://twitter.com/doriko_","https://twitter.com/nashimotowe","https://twitter.com/tkomine","https://twitter.com/kz_lt","https://twitter.com/Omoi3965","https://twitter.com/Knoshin_nchaP","https://twitter.com/CCrusherP","https://twitter.com/hinataEW","https://twitter.com/vinegar_vinegar","https://twitter.com/iii0303_8","https://twitter.com/amehuruyoru49","https://twitter.com/amenomurakumo_p","https://twitter.com/yurryCanon","https://twitter.com/kemu8888","https://twitter.com/bass_ynk","https://twitter.com/696rkr","https://twitter.com/maretu01","https://twitter.com/samorira9","https://twitter.com/mothy_akuno","https://twitter.com/rerulili","https://twitter.com/tikandame","https://twitter.com/inabakumori","https://twitter.com/yasuhiro_vanq","https://twitter.com/Yuki_Jouet","https://twitter.com/balloon0120","https://twitter.com/WADATAKEAKI","https://twitter.com/harumaki_gohan","https://twitter.com/koyokoyokoyori","https://twitter.com/o0toa0o","https://twitter.com/wowaka","https://twitter.com/nabuna2","https://twitter.com/tghgworks_krsy","https://twitter.com/164203","https://twitter.com/sasakure__UK","https://twitter.com/siinamota","https://twitter.com/NishizawasanP","https://twitter.com/jin_jin_suruyo","https://twitter.com/buzz_g","https://twitter.com/GigaMozuku","https://twitter.com/MikanseiP","https://twitter.com/halyosy","https://twitter.com/asshole_wii","https://twitter.com/kairiki_bear","https://twitter.com/oO0Eve0Oo","https://twitter.com/_23ki_","https://twitter.com/xupxq_","https://twitter.com/nulut","https://twitter.com/tri_angl_e","https://twitter.com/wataru_sena","https://twitter.com/ryo_spcl"]		#这个数组中存放鸽子推特地址
-	i=0
-	n = [0]*99
-	a = [0]*99
+		print(e)
+	finally:
+		if httpClient:
+			httpClient.close()
+
+
+def setText(aString):
+    '''设置剪贴板文本'''
+    win32clipboard.OpenClipboard()
+    win32clipboard.EmptyClipboard()
+    win32clipboard.SetClipboardData(win32con.CF_UNICODETEXT, aString)
+    win32clipboard.CloseClipboard()
+
+def qqbot(QQ_group_name,date_qq):
+	# 将消息写到剪贴板
+	setText(date_qq)
+	# 获取qq窗口句柄
+	qq = win32gui.FindWindow(None, QQ_group_name)
+	# 投递剪贴板消息到QQ窗体
+	win32gui.SendMessage(qq, 258, 22, 2080193)
+	win32gui.SendMessage(qq, 770, 0, 0)
+    # 模拟按下回车键
+	win32gui.SendMessage(qq, win32con.WM_KEYDOWN, win32con.VK_RETURN, 0)
+	win32gui.SendMessage(qq, win32con.WM_KEYUP, win32con.VK_RETURN, 0)
+	print("尝试发送")
+def get_QQ_group_name():
+	w=open('qqgroup.ini')
+	QQgroup_name=w.readlines()
+	QQgroup_name=QQgroup_name[0]
+	w.close()
+	print('刷新群名称中,获取到的群名称为:',QQgroup_name)
+	return(QQgroup_name)
+	
+def file_name(i): #读取鸽子名
+	ifcong=open("config.ini")	#读取配置文件依次获取地址
+	url=ifcong.readlines()
+	url=url[i]
+	url=re.findall(r"com/(.+)",str(url)) #利用正则过滤出鸽子名(Twitter后缀)
+	url=url[0]
+	return url
+	
+def count():#统计共有多少位鸽子
+	count=open("config.ini")
+	count_o=count.readlines()
+	count.close()
+	count_o=re.findall(r'twitter(\S.)',str(count_o))
+	i=len(count_o)
+	return(i)
+
+def date_id(ii):
+	ifcong=open("config.ini")	#读取配置文件依次获取地址
+	url=ifcong.readlines()		# 
+	url=url[ii]					#读取指定行数
+	#print("获取当前地址为:",url)	#
+	head = {
+		'User-Agent':'Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML,  like Gecko) Chrome/18.0.1025.166  Safari/535.19'
+	}
+	#head['Accept-Language:'] = 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2'
+	req = request.Request(url, headers=head)
+	#传入创建好的Request对象
+	print("-----读取鸽子:",file_name(ii),"中-----")
 	while True:
-		while i<= 64:
-			with open('http.txt','w') as w:				#目前鸽子地址单独存放到http.txt文件
-				w.write(p[i])
-			w = os.path.isfile(str(file_name()))
-			name=file_name()
-			name=str(name)
-			if w == True:
-				html_file()
-				file_size = stat(name)#读取文件大小 新文件 (
-				file_size=file_size.st_size
-				n[i] = file_size
-				main = int(n[i]) - int(a[i])
-				print("数据大小对比为:",main,"#这是第",i,"次循环")
-				if main<2500:
-					print(name,"这只鸽子没有发推检测下一只鸽子")
-				else:
-					a[i]=n[i]
-					print("a=",a[i])
-					print("鸽子",name,"发推了")
-					startweb()
-			else:
-				html_file()
-				file_size = stat(name)#读取文件大小 新文件 (
-				file_size=file_size.st_size
-				a[i] = file_size
-				print("搜集的数据中")
-			i=i+1
+		try:
+			response = request.urlopen(req,timeout=12)	
+			break
+		except error.URLError as e:
+			print(e.reason)
+	html = response.read().decode('utf-8')
+	#print(html)
+	date_id = re.search(r'name="tweet_(\d*)', str(html))
+	date_id=date_id[1]
+	return(date_id)#返回连接后缀
+	
+def date_Twitter(ii): #检测到更新并获取更新的文字内容
+	head = {
+		'User-Agent':'Mozilla/5.0 (Linux; Android 4.1.1; Nexus 7 Build/JRO03D) AppleWebKit/535.19 (KHTML,  like Gecko) Chrome/18.0.1025.166  Safari/535.19'
+	}
+	date_url="https://twitter.com/"+file_name(ii)+"/status/"+date_id(ii)
+	#print("最新推特地址为:",date_url)
+	date_Twitter = request.Request(date_url, headers=head)
+	print("等待获取网页文字中")
+	while True:
+		try:
+			response = request.urlopen(date_Twitter,timeout=12)
+			break
+		except error.URLError as e:
+			print(e.reason)
+	twitter_html = response.read().decode('utf-8')
+	date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)<a href=', str(twitter_html))	#利用正则过滤图片 如果没有图片则再次过滤无用标签
+	if	date_wb == None:
+		date_wb = re.search(r'class="dir-ltr" dir="ltr">(.*)', str(twitter_html))
+		#过滤链接格式 如果检测到链接  则提取所有的文字  再次过滤 出链接  可以使用  re.findall 
+	return(date_wb[1])
+
+def main():
+	jiuID = [0] * 99
+	newID = [0] * 99
+
+	while True:
+		count_i=count()
+		
+		print("刷新鸽子数量: 共有鸽子",count_i,"只")
 		i=0
+		while i < count_i:
+			#print("获取数字地址:",date_id(i))
+			newID[i] = date_id(i)
+			print("1:旧",jiuID[i])
+			print("1:新",newID[i])
+			if jiuID[i] == 0:
+				jiuID[i] = newID[i]
+				print("2:旧",jiuID[i])
+				print("2:新",newID[i])
+				print("等待刷新数据中")
+			else:
+				if jiuID[i] == newID[i]:
+					print(file_name(i),":未更新")
+				else:
+					jiuID[i]=newID[i]
+					wb=date_Twitter(i) #获取指定鸽子文本内容
+					TTurl="https://twitter.com/"+file_name(i)+"/status/"+date_id(i)
+					web_start(TTurl)
+					date_q=file_name(i)+"发推啦:\n原文为:\n"+wb+"\n机翻:\n "+fanyi(wb)++"\nURL:"+TTurl
+					print(date_q)
+					qqbot(get_QQ_group_name(),date_q)
+					Twitter_img_save()
+					Send_img(get_QQ_group_name())
+			i=i+1
 main()
