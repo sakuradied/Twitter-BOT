@@ -53,8 +53,8 @@ def Send_img(QQ_group_name):
 
 
 def fanyi(text):	#调用百度的API 
-	appid = '20190824000329276'	#APP ID
-	secretKey = 'AzHQHfKcphYrueq8XiO3'	#秘钥
+	appid = 'XXX'	#APP ID
+	secretKey = 'XXXX'	#秘钥
 	httpClient = None
 	myurl = '/api/trans/vip/translate'
 	q = text
